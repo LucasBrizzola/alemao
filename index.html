@@ -1,266 +1,234 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards Alemão - Vocabulário Completo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .perspective-1000 {
-            perspective: 1000px;
-        }
-        .transform-style-3d {
-            transform-style: preserve-3d;
-        }
-        .backface-hidden {
-            backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-            transform: rotateY(180deg);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartões Didáticos de Alemão</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
-
-    <header class="bg-indigo-600 text-white shadow-md py-4 px-6">
-        <div class="max-w-3xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                🇩🇪 Flashcards Alemão
-            </h1>
-            <div id="stats" class="text-sm bg-indigo-700 px-3 py-1 rounded-full font-medium">
-                Progresso: 0 / 0 | Acertos: 0
-            </div>
+<body class="bg-slate-100 min-h-screen p-4 md:p-8 font-sans">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <header class="bg-white rounded-2xl shadow-md p-6 mb-8 text-center border border-slate-200">
+      <h1 class="text-3xl font-extrabold text-slate-800 mb-2">🇩🇪 Flashcards de Alemão</h1>
+      <p class="text-slate-600 mb-4">Pratique a escrita, vocabulário e pronúncia offline.</p>
+      
+      <div class="flex flex-wrap items-center justify-center gap-4">
+        <button id="shuffle-btn" onclick="shuffleCards()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-xl shadow transition flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Embaralhar Cartões
+        </button>
+        
+        <div class="bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 font-semibold text-slate-700">
+          Total: <span id="card-count">0</span> cartões
         </div>
+      </div>
     </header>
 
-    <main class="max-w-xl w-full mx-auto p-4 sm:p-6 flex-grow flex flex-col justify-center">
+    <!-- Cards Container -->
+    <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+  </div>
+
+  <script>
+    const flashcardsData = [
+      { de: "folgen", pt: "seguir" },
+      { de: "buchstabieren", pt: "soletrar" },
+      { de: "abends", pt: "à noite" },
+      { de: "morgens", pt: "de manhã" },
+      { de: "warten", pt: "esperar" },
+      { de: "Welt", pt: "mundo" },
+      { de: "Schulfreund", pt: "colega de escola" },
+      { de: "Stimmung", pt: "clima / atmosfera" },
+      { de: "Abfahrt", pt: "partida" },
+      { de: "Baum", pt: "árvore" },
+      { de: "sinnlos", pt: "sem sentido" },
+      { de: "Mineralwasser", pt: "água mineral" },
+      { de: "flüstern", pt: "sussurrar" },
+      { de: "Nachbarschaft", pt: "vizinhança" },
+      { de: "Kreuzung", pt: "interseção / cruzamento" },
+      { de: "Zutat", pt: "ingrediente" },
+      { de: "widersprechen", pt: "contradizer" },
+      { de: "Hausmeister", pt: "zelador" },
+      { de: "wählen", pt: "escolher" },
+      { de: "Museum", pt: "museu" },
+      { de: "Gemälde", pt: "pintura / quadro" },
+      { de: "berühmt", pt: "famoso" },
+      { de: "Foto", pt: "foto" },
+      { de: "Handy", pt: "telemóvel / celular" },
+      { de: "Geheimnis", pt: "segredo" },
+      { de: "unglaublich", pt: "inacreditável / incrível" },
+      { de: "lächeln", pt: "sorrir" },
+      { de: "Licht", pt: "luz" },
+      { de: "schlecht", pt: "mau / ruim" },
+      { de: "zufrieden", pt: "satisfeito" },
+      { de: "Mühe", pt: "esforço" },
+      { de: "Nachricht", pt: "mensagem" },
+      { de: "Chef", pt: "chefe" },
+      { de: "Tippfehler", pt: "erro de digitação" },
+      { de: "Internet", pt: "internet" },
+      { de: "WLAN", pt: "Wi-Fi" },
+      { de: "Kellner", pt: "garçom / empregado de mesa" },
+      { de: "Passwort", pt: "palavra-passe / senha" },
+      { de: "Projekte", pt: "projetos" },
+      { de: "Team", pt: "equipa / time" },
+      { de: "schreiben", pt: "escrever" },
+      { de: "entspannen", pt: "relaxar" },
+      { de: "schicken", pt: "enviar" },
+      { de: "verbinden", pt: "conectar / ligar" },
+      { de: "antworten", pt: "responder" },
+      { de: "funktionieren", pt: "funcionar" },
+      { de: "glauben", pt: "acreditar / achar" },
+      { de: "wichtig", pt: "importante" },
+      { de: "professionell", pt: "profissional" },
+      { de: "lustig", pt: "engraçado / divertido" },
+      { de: "sofort", pt: "imediatamente" },
+      { de: "offline", pt: "offline / desligado" },
+      { de: "Zelt", pt: "barraca / tenda" },
+      { de: "echt", pt: "verdadeiro / autêntico" },
+      { de: "wissen", pt: "saber" },
+      { de: "mutig", pt: "corajoso" },
+      { de: "Kuscheltier", pt: "bicho de pelúcia" },
+      { de: "ständig", pt: "constantemente" },
+      { de: "Ausgang", pt: "saída" },
+      { de: "Kamera", pt: "câmera" },
+      { de: "Gesicht", pt: "rosto / face" },
+      { de: "Kleidung", pt: "roupa / vestuário" },
+      { de: "Hemd", pt: "camisa" },
+      { de: "Hose", pt: "calça" },
+      { de: "Jogginghose", pt: "calça de moletom / fato de treino" },
+      { de: "T-Shirt", pt: "camiseta / t-shirt" },
+      { de: "Wohnung", pt: "apartamento" },
+      { de: "Dating-App", pt: "aplicativo de relacionamentos" },
+      { de: "ernst", pt: "sério" },
+      { de: "eng", pt: "apertado / justo" },
+      { de: "atmen", pt: "respirar" },
+      { de: "aufhören", pt: "parar / cessar" },
+      { de: "tragen", pt: "usar / vestir / carregar" },
+      { de: "Fieber", pt: "febre" },
+      { de: "krank", pt: "doente" },
+      { de: "Gute Besserung", pt: "as minhas melhoras / fique bem" },
+      { de: "genießen", pt: "aproveitar / desfrutar" },
+      { de: "nett", pt: "simpático / agradável" }
+    ];
+
+    let currentCards = [...flashcardsData];
+
+    function speakGerman(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'de-DE';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("O seu navegador não suporta síntese de voz.");
+      }
+    }
+
+    function renderCards() {
+      const container = document.getElementById('cards-container');
+      document.getElementById('card-count').innerText = currentCards.length;
+      container.innerHTML = '';
+
+      currentCards.forEach((card, index) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between relative';
         
-        <!-- Flashcard container with flip effect -->
-        <div class="perspective-1000 w-full h-72 sm:h-80 mb-6 cursor-pointer" id="cardContainer" onclick="flipCard()">
-            <div id="cardInner" class="relative w-full h-full duration-500 transform-style-3d shadow-xl rounded-2xl bg-white border border-slate-100">
-                
-                <!-- Front Side (Deutsch) -->
-                <div class="absolute inset-0 w-full h-full backface-hidden flex flex-col justify-between p-6 sm:p-8 bg-gradient-to-br from-white to-slate-50 rounded-2xl">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-semibold tracking-wider text-indigo-600 uppercase bg-indigo-50 px-2.5 py-1 rounded-full">Anverso (Alemão)</span>
-                        <button onclick="event.stopPropagation(); speakGerman();" class="p-2.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-full transition-all shadow-sm" title="Ouvir pronúncia">
-                            🔊
-                        </button>
-                    </div>
-                    <div class="text-center my-auto">
-                        <h2 id="cardGerman" class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Carregando...</h2>
-                        <p class="text-xs text-slate-400 mt-2 italic" id="cardHint">Clique para virar o cartão</p>
-                    </div>
-                    <div class="text-center text-xs text-slate-400">Cartão <span id="currentIndexDisplay">1</span> de <span id="totalCardsDisplay">0</span></div>
-                </div>
-
-                <!-- Back Side (Português) -->
-                <div class="absolute inset-0 w-full h-full backface-hidden rotate-y-180 flex flex-col justify-between p-6 sm:p-8 bg-gradient-to-br from-indigo-50 to-white rounded-2xl">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-semibold tracking-wider text-emerald-600 uppercase bg-emerald-50 px-2.5 py-1 rounded-full">Verso (Português)</span>
-                        <span class="text-xs text-slate-400">Tradução</span>
-                    </div>
-                    <div class="text-center my-auto">
-                        <h2 id="cardPortuguese" class="text-3xl sm:text-4xl font-extrabold text-emerald-700 tracking-tight">Tradução</h2>
-                    </div>
-                    <div class="text-center text-xs text-slate-400">Verso do Cartão</div>
-                </div>
-
+        cardEl.innerHTML = `
+          <div>
+            <!-- Header do Cartão -->
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Cartão #${index + 1}</span>
+              <button onclick="speakGerman('${card.de.replace(/'/g, "\\'")}')" title="Ouvir pronúncia" class="p-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-full transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+                </svg>
+              </button>
             </div>
-        </div>
 
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6">
-            <h3 class="text-sm font-semibold text-slate-700 mb-3">Teste seu conhecimento:</h3>
-            <div class="space-y-3">
-                <div>
-                    <label class="block text-xs font-medium text-slate-500 mb-1">Digite a palavra em Alemão:</label>
-                    <input type="text" id="inputGerman" placeholder="Ex: Nachricht" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-500 mb-1">Digite a tradução em Português:</label>
-                    <input type="text" id="inputPortuguese" placeholder="Ex: Mensagem" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
-                </div>
-                <button onclick="verifyAnswer()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm text-sm">
-                    Verificar Resposta
-                </button>
+            <!-- Palavra em Alemão -->
+            <div class="text-center my-4">
+              <h2 class="text-2xl font-bold text-slate-800">${card.de}</h2>
             </div>
-            <div id="feedbackMessage" class="mt-3 text-center text-sm font-medium hidden"></div>
-        </div>
 
-        <div class="flex items-center justify-between gap-3">
-            <button onclick="prevCard()" class="flex-1 bg-white hover:bg-slate-100 text-slate-700 font-medium py-2.5 px-4 rounded-xl border border-slate-300 shadow-sm transition-colors text-sm">
-                ← Anterior
-            </button>
-            <button onclick="resetCards()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-4 rounded-xl transition-colors text-sm" title="Reiniciar">
-                🔄
-            </button>
-            <button onclick="nextCard()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-4 rounded-xl shadow-sm transition-colors text-sm">
-                Próximo →
-            </button>
-        </div>
+            <!-- Form de Resposta -->
+            <div class="space-y-3 mt-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1">Escreva em Alemão:</label>
+                <input type="text" id="input-de-${index}" placeholder="Digite em alemão..." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1">Resposta em Português:</label>
+                <input type="text" id="input-pt-${index}" placeholder="Digite em português..." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+              </div>
+            </div>
 
-    </main>
-
-    <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200 bg-white">
-        Desenvolvido para estudo prático e interativo de vocabulário alemão.
-    </footer>
-
-    <script>
-        // Conjunto abrangente de palavras extraídas das lições sem repetição
-        const flashcardsData = [
-            { german: "folgen", portuguese: "seguir" },
-            { german: "buchstabieren", portuguese: "soletrar" },
-            { german: "abends", portuguese: "à noite" },
-            { german: "morgens", portuguese: "de manhã" },
-            { german: "warten", portuguese: "esperar" },
-            { german: "Welt", portuguese: "mundo" },
-            { german: "Museum", portuguese: "museu" },
-            { german: "Gemälde", portuguese: "pintura / quadro" },
-            { german: "berühmt", portuguese: "famoso" },
-            { german: "Foto", portuguese: "foto" },
-            { german: "Handy", portuguese: "celular" },
-            { german: "Geheimnis", portuguese: "segredo" },
-            { german: "unglaublich", portuguese: "inacreditável" },
-            { german: "lächeln", portuguese: "sorrir" },
-            { german: "Licht", portuguese: "luz" },
-            { german: "schlecht", portuguese: "ruim" },
-            { german: "zufrieden", portuguese: "satisfeito" },
-            { german: "Mühe", portuguese: "esforço / trabalho" },
-            { german: "Nachricht", portuguese: "mensagem" },
-            { german: "Chef", portuguese: "chefe" },
-            { german: "Tippfehler", portuguese: "erro de digitação" },
-            { german: "Internet", portuguese: "internet" },
-            { german: "WLAN", portuguese: "Wi-Fi" },
-            { german: "Kellner", portuguese: "garçom" },
-            { german: "Passwort", portuguese: "senha" },
-            { german: "Projekte", portuguese: "projetos" },
-            { german: "Team", portuguese: "equipe / time" },
-            { german: "schreiben", portuguese: "escrever" },
-            { german: "entspannen", portuguese: "relaxar" },
-            { german: "schicken", portuguese: "enviar" },
-            { german: "verbinden", portuguese: "conectar" },
-            { german: "antworten", portuguese: "responder" },
-            { german: "funktionieren", portuguese: "funcionar" },
-            { german: "glauben", portuguese: "acreditar / achar" },
-            { german: "wichtig", portuguese: "importante" },
-            { german: "professionell", portuguese: "profissional" },
-            { german: "lustig", portuguese: "engraçado" },
-            { german: "sofort", portuguese: "imediatamente" },
-            { german: "offline", portuguese: "offline / desconectado" }
-        ];
-
-        let currentIndex = 0;
-        let correctCount = 0;
-        let isFlipped = false;
-
-        const cardContainer = document.getElementById('cardContainer');
-        const cardInner = document.getElementById('cardInner');
-        const cardGerman = document.getElementById('cardGerman');
-        const cardPortuguese = document.getElementById('cardPortuguese');
-        const currentIndexDisplay = document.getElementById('currentIndexDisplay');
-        const totalCardsDisplay = document.getElementById('totalCardsDisplay');
-        const stats = document.getElementById('stats');
-        const inputGerman = document.getElementById('inputGerman');
-        const inputPortuguese = document.getElementById('inputPortuguese');
-        const feedbackMessage = document.getElementById('feedbackMessage');
-
-        function initApp() {
-            totalCardsDisplay.textContent = flashcardsData.length;
-            loadCard();
-        }
-
-        function loadCard() {
-            const currentCard = flashcardsData[currentIndex];
-            cardGerman.textContent = currentCard.german;
-            cardPortuguese.textContent = currentCard.portuguese;
-            currentIndexDisplay.textContent = currentIndex + 1;
+            <!-- Feedback -->
+            <div id="feedback-${index}" class="hidden mt-3 p-2 rounded-lg text-xs font-semibold text-center"></div>
             
-            if (isFlipped) {
-                cardInner.classList.remove('rotate-y-180');
-                isFlipped = false;
-            }
+            <!-- Resposta / Verso Revelado -->
+            <div id="answer-${index}" class="hidden mt-3 p-3 bg-slate-50 border border-slate-200 rounded-lg text-center">
+              <span class="text-xs text-slate-400 block font-medium">Tradução Correta:</span>
+              <span class="text-sm font-bold text-slate-700">${card.pt}</span>
+            </div>
+          </div>
 
-            inputGerman.value = '';
-            inputPortuguese.value = '';
-            feedbackMessage.classList.add('hidden');
-            updateStats();
-        }
+          <!-- Botão Verificar -->
+          <div class="mt-6 pt-4 border-t border-slate-100 flex gap-2">
+            <button onclick="checkAnswer(${index}, '${card.de.replace(/'/g, "\\'")}', '${card.pt.replace(/'/g, "\\'")}')" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-xl text-sm transition">
+              Verificar Resposta
+            </button>
+            <button onclick="toggleAnswer(${index})" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-3 rounded-xl text-sm transition" title="Mostrar/Ocultar Resposta">
+              👁️
+            </button>
+          </div>
+        `;
+        container.appendChild(cardEl);
+      });
+    }
 
-        function flipCard() {
-            isFlipped = !isFlipped;
-            if (isFlipped) {
-                cardInner.classList.add('rotate-y-180');
-            } else {
-                cardInner.classList.remove('rotate-y-180');
-            }
-        }
+    function checkAnswer(index, correctDe, correctPt) {
+      const userDe = document.getElementById(`input-de-${index}`).value.trim().toLowerCase();
+      const userPt = document.getElementById(`input-pt-${index}`).value.trim().toLowerCase();
+      const feedbackEl = document.getElementById(`feedback-${index}`);
+      const answerEl = document.getElementById(`answer-${index}`);
 
-        function nextCard() {
-            currentIndex = (currentIndex + 1) % flashcardsData.length;
-            loadCard();
-        }
+      const isDeCorrect = userDe === correctDe.toLowerCase();
+      const isPtCorrect = userPt.length > 0 && correctPt.toLowerCase().includes(userPt);
 
-        function prevCard() {
-            currentIndex = (currentIndex - 1 + flashcardsData.length) % flashcardsData.length;
-            loadCard();
-        }
+      feedbackEl.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-emerald-100', 'text-emerald-700', 'bg-yellow-100', 'text-yellow-700');
 
-        function resetCards() {
-            currentIndex = 0;
-            correctCount = 0;
-            loadCard();
-        }
+      if (isDeCorrect && isPtCorrect) {
+        feedbackEl.innerText = "✨ Excelente! Ambas as respostas estão corretas.";
+        feedbackEl.classList.add('bg-emerald-100', 'text-emerald-700');
+      } else if (isDeCorrect || isPtCorrect) {
+        feedbackEl.innerText = "⚠️ Quase lá! Uma das respostas está correta.";
+        feedbackEl.classList.add('bg-yellow-100', 'text-yellow-700');
+      } else {
+        feedbackEl.innerText = "❌ Incorreto. Tente novamente ou veja a resposta abaixo.";
+        feedbackEl.classList.add('bg-red-100', 'text-red-700');
+      }
 
-        function updateStats() {
-            stats.textContent = `Progresso: ${currentIndex + 1} / ${flashcardsData.length} | Acertos: ${correctCount}`;
-        }
+      answerEl.classList.remove('hidden');
+    }
 
-        function speakGerman() {
-            const text = flashcardsData[currentIndex].german;
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'de-DE';
-                utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-            } else {
-                showFeedback("Síntese de voz não suportada neste navegador.", false);
-            }
-        }
+    function toggleAnswer(index) {
+      const answerEl = document.getElementById(`answer-${index}`);
+      answerEl.classList.toggle('hidden');
+    }
 
-        function verifyAnswer() {
-            const currentCard = flashcardsData[currentIndex];
-            const userGerman = inputGerman.value.trim().toLowerCase();
-            const userPortuguese = inputPortuguese.value.trim().toLowerCase();
+    function shuffleCards() {
+      for (let i = currentCards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [currentCards[i], currentCards[j]] = [currentCards[j], currentCards[i]];
+      }
+      renderCards();
+    }
 
-            const correctGerman = currentCard.german.toLowerCase();
-            const correctPortuguese = currentCard.portuguese.toLowerCase();
-
-            // Valida se pelo menos um está correto ou ambos
-            const isGermanCorrect = userGerman === correctGerman;
-            const isPortugueseCorrect = userPortuguese === correctPortuguese;
-
-            if (isGermanCorrect || isPortugueseCorrect) {
-                correctCount++;
-                showFeedback("Correto! Bom trabalho 🎉", true);
-                if (!isFlipped) flipCard();
-            } else {
-                showFeedback(`Incorreto. O correto era: ${currentCard.german} - ${currentCard.portuguese}`, false);
-                if (!isFlipped) flipCard();
-            }
-            updateStats();
-        }
-
-        function showFeedback(text, isSuccess) {
-            feedbackMessage.textContent = text;
-            feedbackMessage.classList.remove('hidden', 'text-emerald-600', 'text-rose-600');
-            feedbackMessage.classList.add(isSuccess ? 'text-emerald-600' : 'text-rose-600');
-        }
-
-        window.onload = initApp;
-    </script>
+    // Inicializar
+    renderCards();
+  </script>
 </body>
 </html>
